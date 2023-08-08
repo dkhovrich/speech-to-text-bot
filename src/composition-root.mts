@@ -10,6 +10,7 @@ import { StartBotAction } from "./bot/Actions/StartBotAction.mjs";
 import { VoiceBotAction } from "./bot/Actions/VoiceBotAction.mjs";
 import { OpenAiSpeechToTextService, SpeechToTextService } from "./services/speech-to-text.service.mjs";
 import { AudioConverterService, AudioConverterServiceImpl } from "./services/audio-converter.service.mjs";
+import { Repository, TranscribeModel, TranscribeRepository } from "./services/transcribe.repository.mjs";
 
 export const TOKENS = {
     bot: token<IBot>("bot"),
@@ -17,6 +18,9 @@ export const TOKENS = {
         config: token<ConfigService>("config.service"),
         audioConverter: token<AudioConverterService>("audio-converter.service"),
         speechToText: token<SpeechToTextService>("speech-to-text.service")
+    },
+    repository: {
+        transcribe: token<Repository<TranscribeModel>>("transcribe.repository")
     },
     loggerFactory: token<LoggerFactory>("logger.factory"),
     middleware: {
@@ -39,7 +43,13 @@ function createMiddlewares(container: Container): void {
 function createActions(container: Container): void {
     container.bind(TOKENS.action.start).toInstance(StartBotAction).inSingletonScope();
 
-    injected(VoiceBotAction, TOKENS.service.audioConverter, TOKENS.service.speechToText, TOKENS.loggerFactory);
+    injected(
+        VoiceBotAction,
+        TOKENS.service.audioConverter,
+        TOKENS.service.speechToText,
+        TOKENS.repository.transcribe,
+        TOKENS.loggerFactory
+    );
     container.bind(TOKENS.action.voice).toInstance(VoiceBotAction).inSingletonScope();
 
     container
@@ -59,6 +69,9 @@ function createServices(container: Container): void {
     container.bind(TOKENS.service.speechToText).toInstance(OpenAiSpeechToTextService).inSingletonScope();
 
     container.bind(TOKENS.service.audioConverter).toInstance(AudioConverterServiceImpl).inSingletonScope();
+
+    injected(TranscribeRepository, TOKENS.service.config);
+    container.bind(TOKENS.repository.transcribe).toInstance(TranscribeRepository).inSingletonScope();
 }
 
 export function createContainer(): Container {
