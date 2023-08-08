@@ -60,13 +60,14 @@ function createActions(container: Container): void {
 }
 
 function createBot(container: Container): void {
+    const deps = [TOKENS.service.config, TOKENS.action.all, TOKENS.middleware.all, TOKENS.loggerFactory] as const;
     switch (process.env.BOT_MODE) {
         case "server":
-            injected(BotServer, TOKENS.service.config, TOKENS.action.all, TOKENS.middleware.all, TOKENS.loggerFactory);
+            injected(BotServer, ...deps);
             container.bind(TOKENS.bot).toInstance(BotServer).inSingletonScope();
             break;
         case "webhook":
-            injected(BotWebhook, TOKENS.service.config, TOKENS.action.all, TOKENS.middleware.all, TOKENS.loggerFactory);
+            injected(BotWebhook, ...deps);
             container.bind(TOKENS.bot).toInstance(BotWebhook).inSingletonScope();
             break;
         default:
