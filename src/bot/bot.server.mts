@@ -8,7 +8,7 @@ export class BotServer extends Bot {
             process.once("SIGINT", () => this.bot.stop("SIGINT"));
             process.once("SIGTERM", () => this.bot.stop("SIGTERM"));
 
-            this.logger.info("Starting bot", { mode: "server", env: this.configService.get("env") });
+            this.logger.info("Starting bot", { mode: "server" });
             await this.bot.launch();
         } catch (error) {
             this.logger.error("Start", { error });
@@ -17,6 +17,6 @@ export class BotServer extends Bot {
     }
 
     protected createBot(): TelegrafBot {
-        return new Telegraf<Context>(this.configService.get("telegramToken"));
+        return new Telegraf<Context>(this.token);
     }
 }

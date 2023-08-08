@@ -15,7 +15,7 @@ export abstract class Bot implements IBot {
     protected readonly logger: Logger;
 
     public constructor(
-        protected readonly configService: ConfigService,
+        private readonly configService: ConfigService,
         private readonly actions: BotAction[],
         middlewares: Middleware[],
         loggerFactory: LoggerFactory
@@ -23,6 +23,10 @@ export abstract class Bot implements IBot {
         this.logger = loggerFactory.create("bot");
         this.bot = this.createBot();
         middlewares.forEach(middleware => this.bot.use(middleware.create()));
+    }
+
+    protected get token(): string {
+        return this.configService.get("telegramToken");
     }
 
     public async configure(): Promise<void> {

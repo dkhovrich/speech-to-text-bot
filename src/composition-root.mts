@@ -11,6 +11,8 @@ import { VoiceBotAction } from "./bot/Actions/VoiceBotAction.mjs";
 import { OpenAiSpeechToTextService, SpeechToTextService } from "./services/speech-to-text.service.mjs";
 import { AudioConverterService, AudioConverterServiceImpl } from "./services/audio-converter.service.mjs";
 import { Repository, TranscribeModel, TranscribeRepository } from "./services/transcribe.repository.mjs";
+import { BotWebhook } from "./bot/bot.webhook.mjs";
+import { absurd } from "./utils/absurd.mjs";
 
 export const TOKENS = {
     bot: token<IBot>("bot"),
@@ -58,8 +60,18 @@ function createActions(container: Container): void {
 }
 
 function createBot(container: Container): void {
-    injected(BotServer, TOKENS.service.config, TOKENS.action.all, TOKENS.middleware.all, TOKENS.loggerFactory);
-    container.bind(TOKENS.bot).toInstance(BotServer).inSingletonScope();
+    switch (process.env.BOT_MODE) {
+        case "server":
+            injected(BotServer, TOKENS.service.config, TOKENS.action.all, TOKENS.middleware.all, TOKENS.loggerFactory);
+            container.bind(TOKENS.bot).toInstance(BotServer).inSingletonScope();
+            break;
+        case "webhook":
+            injected(BotWebhook, TOKENS.service.config, TOKENS.action.all, TOKENS.middleware.all, TOKENS.loggerFactory);
+            container.bind(TOKENS.bot).toInstance(BotWebhook).inSingletonScope();
+            break;
+        default:
+            absurd(process.env.BOT_MODE);
+    }
 }
 
 function createServices(container: Container): void {

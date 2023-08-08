@@ -3,10 +3,12 @@ import dotenv from "dotenv";
 import { z } from "zod";
 
 const envSchema = z.union([z.literal("development"), z.literal("production")]);
+const botModeSchema = z.union([z.literal("server"), z.literal("webhook")]);
 
 const envVariablesSchema = z.object({
     TELEGRAM_TOKEN: z.string(),
     NODE_ENV: envSchema,
+    BOT_MODE: botModeSchema,
     OPENAI_KEY: z.string(),
     ALLOWED_USER_IDS: z.string()
 });
