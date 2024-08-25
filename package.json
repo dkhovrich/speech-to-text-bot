@@ -1,6 +1,6 @@
 {
     "name": "speech-to-text-bot",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Telegram bot that converts voice messages to text",
     "main": "index.mjs",
     "type": "module",
