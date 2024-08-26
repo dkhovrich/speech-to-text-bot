@@ -13,6 +13,7 @@ import { AudioConverterService, AudioConverterServiceImpl } from "./services/aud
 import { Repository, TranscribeModel, TranscribeRepository } from "./services/transcribe.repository.mjs";
 import { BotWebhook } from "./bot/bot.webhook.mjs";
 import { absurd } from "./utils/absurd.mjs";
+import { TranscribeRepositoryStub } from "./services/transcribe.repository.stub.mts.js";
 
 export const TOKENS = {
     bot: token<IBot>("bot"),
@@ -84,7 +85,7 @@ function createServices(container: Container): void {
     container.bind(TOKENS.service.audioConverter).toInstance(AudioConverterServiceImpl).inSingletonScope();
 
     injected(TranscribeRepository, TOKENS.service.config);
-    container.bind(TOKENS.repository.transcribe).toInstance(TranscribeRepository).inSingletonScope();
+    container.bind(TOKENS.repository.transcribe).toInstance(TranscribeRepositoryStub).inSingletonScope();
 }
 
 export function createContainer(): Container {
